@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.</declaration>
+	<template>
+		<name>Line</name>
+		<parameter>int R, </parameter>
+		<location id="id0" x="-340" y="-170">
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name>Station</name>
+		<parameter>int T, int AvailableT</parameter>
+		<location id="id1" x="-272" y="-51">
+			<name x="-408" y="-59">waiting for trains</name>
+		</location>
+		<location id="id2" x="-68" y="-51">
+			<name x="-51" y="-59">occupied</name>
+		</location>
+		<location id="id3" x="-178" y="59">
+			<name x="-221" y="76">fully occupied</name>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<nail x="-170" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<nail x="-68" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<nail x="-272" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id3"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+		</transition>
+	</template>
+	<template>
+		<name>Train</name>
+		<parameter>int V, int C, int Cmax</parameter>
+		<location id="id4" x="-501" y="-119">
+			<name x="-612" y="-153">waiting in a station</name>
+		</location>
+		<location id="id5" x="-272" y="-119">
+			<name x="-297" y="-153">traveling</name>
+		</location>
+		<location id="id6" x="-389" y="-1">
+			<name x="-476" y="16">waiting outside a station</name>
+		</location>
+		<location id="id7" x="-272" y="-1">
+			<name x="-255" y="-10">out of power</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<nail x="-382" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id4"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Process = Template();
+// List one or more processes to be composed into a system.
+system Process;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

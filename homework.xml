@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
-	<declaration>// Place global declarations here.</declaration>
+	<declaration>// Place global declarations here.
+
+
+chan enter_in_station, start_traveling, arrived_outside_station, train_out_of_power;
+
+
+
+</declaration>
 	<template>
 		<name>Line</name>
-		<parameter>int R, </parameter>
+		<parameter>int R</parameter>
 		<location id="id0" x="-340" y="-170">
 		</location>
 		<init ref="id0"/>
@@ -13,13 +20,13 @@
 		<name>Station</name>
 		<parameter>int T, int AvailableT</parameter>
 		<location id="id1" x="-272" y="-51">
-			<name x="-408" y="-59">waiting for trains</name>
+			<name x="-408" y="-59">waiting_for_trains</name>
 		</location>
 		<location id="id2" x="-68" y="-51">
 			<name x="-51" y="-59">occupied</name>
 		</location>
 		<location id="id3" x="-178" y="59">
-			<name x="-221" y="76">fully occupied</name>
+			<name x="-221" y="76">fully_occupied</name>
 		</location>
 		<init ref="id1"/>
 		<transition>
@@ -53,54 +60,90 @@
 	<template>
 		<name>Train</name>
 		<parameter>int V, int C, int Cmax</parameter>
-		<location id="id4" x="-501" y="-119">
-			<name x="-612" y="-153">waiting in a station</name>
+		<declaration>
+
+void decreasePower(){
+    /*
+    C = C - 1;
+    */        
+}</declaration>
+		<location id="id4" x="-595" y="-110">
+			<name x="-688" y="-170">waiting_in_a_station</name>
+			<label kind="invariant" x="-671" y="-144">C &lt;= Cmax</label>
 		</location>
-		<location id="id5" x="-272" y="-119">
-			<name x="-297" y="-153">traveling</name>
+		<location id="id5" x="-187" y="-119">
+			<name x="-221" y="-178">traveling</name>
+			<label kind="invariant" x="-212" y="-161">C &gt;= 0</label>
 		</location>
-		<location id="id6" x="-389" y="-1">
-			<name x="-476" y="16">waiting outside a station</name>
+		<location id="id6" x="-595" y="93">
+			<name x="-688" y="127">waiting_outside_a_station</name>
+			<label kind="invariant" x="-605" y="110">C&gt;=0</label>
 		</location>
-		<location id="id7" x="-272" y="-1">
-			<name x="-255" y="-10">out of power</name>
+		<location id="id7" x="-187" y="93">
+			<name x="-221" y="110">out_of_power</name>
+			<label kind="invariant" x="-204" y="127">C &lt;= 0</label>
 		</location>
 		<init ref="id4"/>
 		<transition>
 			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="-816" y="68">decreasePower()</label>
+			<nail x="-680" y="59"/>
+			<nail x="-714" y="102"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-93" y="-127">decreasePower()</label>
+			<nail x="-102" y="-144"/>
+			<nail x="-93" y="-85"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
 			<target ref="id7"/>
+			<label kind="guard" x="-408" y="119">C==0</label>
+			<label kind="synchronisation" x="-450" y="102">train_out_of_power!</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id7"/>
+			<label kind="guard" x="-136" y="26">C==0</label>
+			<label kind="synchronisation" x="-178" y="9">train_out_of_power!</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id4"/>
-			<nail x="-382" y="-204"/>
+			<label kind="synchronisation" x="-459" y="-212">enter_in_station?</label>
+			<nail x="-408" y="-187"/>
 		</transition>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id4"/>
+			<label kind="synchronisation" x="-722" y="-25">enter_in_station?</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id6"/>
+			<label kind="synchronisation" x="-493" y="-25">arrived_outside_station!</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id5"/>
+			<label kind="synchronisation" x="-450" y="-144">start_traveling?</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
-Process = Template();
+
+line = Line(5); //dove 5 è R, ovvero l'intervallo di tempo tra ogni richiesta di entrare nella station
+stationOne = Station(3, 1); //primo parametro è il numero di tracks, il secondo è il numero di availableTracks
+stationTwo = Station(1, 0);
+stationThree = Station(2, 2);
+
+
+
 // List one or more processes to be composed into a system.
-system Process;
+system line, stationOne, stationTwo, stationThree;
     </system>
 	<queries>
-		<query>
-			<formula></formula>
-			<comment></comment>
-		</query>
 	</queries>
 </nta>

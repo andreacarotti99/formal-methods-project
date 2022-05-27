@@ -20,7 +20,7 @@ chan enter_in_station, start_traveling, arrived_outside_station, train_out_of_po
 		<name>Station</name>
 		<parameter>int T, int AvailableT</parameter>
 		<location id="id1" x="-272" y="-51">
-			<name x="-408" y="-59">waiting_for_trains</name>
+			<name x="-433" y="-59">waiting_for_trains</name>
 		</location>
 		<location id="id2" x="-68" y="-51">
 			<name x="-51" y="-59">occupied</name>
@@ -29,6 +29,12 @@ chan enter_in_station, start_traveling, arrived_outside_station, train_out_of_po
 			<name x="-221" y="76">fully_occupied</name>
 		</location>
 		<init ref="id1"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<nail x="-272" y="-153"/>
+			<nail x="-348" y="-144"/>
+		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id1"/>
@@ -60,76 +66,75 @@ chan enter_in_station, start_traveling, arrived_outside_station, train_out_of_po
 	<template>
 		<name>Train</name>
 		<parameter>int V, int C, int Cmax</parameter>
-		<declaration>
+		<declaration>clock clk;
 
 void decreasePower(){
-    /*
     C = C - 1;
-    */        
 }</declaration>
-		<location id="id4" x="-595" y="-254">
-			<name x="-688" y="-314">waiting_in_a_station</name>
-			<label kind="invariant" x="-671" y="-288">C &lt;= Cmax</label>
+		<location id="id4" x="-629" y="-518">
+			<name x="-722" y="-578">waiting_in_a_station</name>
+			<label kind="invariant" x="-705" y="-552">C &lt;= Cmax</label>
 		</location>
-		<location id="id5" x="-187" y="-263">
-			<name x="-221" y="-331">traveling</name>
+		<location id="id5" x="-221" y="-527">
+			<name x="-255" y="-569">traveling</name>
 		</location>
-		<location id="id6" x="-595" y="-51">
-			<name x="-688" y="-17">waiting_outside_a_station</name>
+		<location id="id6" x="-629" y="-315">
+			<name x="-756" y="-246">waiting_outside_a_station</name>
 		</location>
-		<location id="id7" x="-187" y="-51">
-			<name x="-221" y="-34">out_of_power</name>
-			<label kind="invariant" x="-204" y="-17">C &lt;= 0</label>
+		<location id="id7" x="-221" y="-315">
+			<name x="-255" y="-298">out_of_power</name>
+			<label kind="invariant" x="-238" y="-281">C &lt;= 0</label>
 		</location>
 		<init ref="id4"/>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id6"/>
-			<label kind="guard" x="-773" y="-59">C&gt;=0</label>
-			<label kind="assignment" x="-816" y="-85">decreasePower()</label>
-			<nail x="-680" y="-85"/>
-			<nail x="-714" y="-42"/>
+			<label kind="guard" x="-816" y="-323">C&gt;=0</label>
+			<label kind="assignment" x="-850" y="-349">decreasePower()</label>
+			<nail x="-714" y="-349"/>
+			<nail x="-748" y="-306"/>
 		</transition>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id5"/>
-			<label kind="guard" x="-93" y="-280">C&gt;=0</label>
-			<label kind="assignment" x="-85" y="-255">decreasePower()</label>
-			<nail x="-102" y="-288"/>
-			<nail x="-93" y="-229"/>
+			<label kind="guard" x="-127" y="-544">C&gt;=0</label>
+			<label kind="assignment" x="-119" y="-527">decreasePower()</label>
+			<nail x="-136" y="-552"/>
+			<nail x="-127" y="-493"/>
 		</transition>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id7"/>
-			<label kind="guard" x="-408" y="-25">C==0</label>
-			<label kind="synchronisation" x="-450" y="-42">train_out_of_power!</label>
+			<label kind="guard" x="-442" y="-289">C==0</label>
+			<label kind="synchronisation" x="-484" y="-306">train_out_of_power!</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id7"/>
-			<label kind="guard" x="-136" y="-118">C==0</label>
-			<label kind="synchronisation" x="-178" y="-135">train_out_of_power!</label>
+			<label kind="guard" x="-170" y="-408">C==0</label>
+			<label kind="synchronisation" x="-212" y="-425">train_out_of_power!</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id4"/>
-			<label kind="synchronisation" x="-459" y="-356">enter_in_station?</label>
-			<nail x="-408" y="-331"/>
+			<label kind="synchronisation" x="-501" y="-620">enter_in_station?</label>
+			<nail x="-442" y="-595"/>
 		</transition>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id4"/>
-			<label kind="synchronisation" x="-722" y="-169">enter_in_station?</label>
+			<label kind="synchronisation" x="-756" y="-433">enter_in_station?</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id6"/>
-			<label kind="synchronisation" x="-493" y="-169">arrived_outside_station!</label>
+			<label kind="synchronisation" x="-527" y="-433">arrived_outside_station!</label>
+			<label kind="assignment" x="-484" y="-416">clk = 0</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id5"/>
-			<label kind="synchronisation" x="-450" y="-288">start_traveling?</label>
+			<label kind="synchronisation" x="-493" y="-552">start_traveling?</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
@@ -138,11 +143,12 @@ line = Line(5); //dove 5 è R, ovvero l'intervallo di tempo tra ogni richiesta d
 stationOne = Station(3, 1); //primo parametro è il numero di tracks, il secondo è il numero di availableTracks
 stationTwo = Station(1, 0);
 stationThree = Station(2, 2);
+train = Train(1, 10, 10); //dove 1 è la velocità del treno, 10 la carica attuale, e 10 la carica massima
 
 
 
 // List one or more processes to be composed into a system.
-system line, stationOne, stationTwo, stationThree;
+system line, stationOne, stationTwo, stationThree, train;
     </system>
 	<queries>
 	</queries>

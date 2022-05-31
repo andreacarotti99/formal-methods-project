@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan enter, free_truck;</declaration>
+	<template>
+		<name>Line</name>
+		<parameter>int R</parameter>
+		<declaration>// Line Clocks
+
+// Line Variables
+typedef struct{
+    int distance[2];    //distance (in km) between each pair of consecutive stations
+    int max_delay[2];    //maximum time to reach the following station: associated to each pair of consecutive stations
+}line;
+
+// Line Functions 
+</declaration>
+		<location id="id0" x="-340" y="-170">
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name>Station</name>
+		<parameter>int T</parameter>
+		<declaration>// Station Clocks
+
+// Station Variables
+typedef struct{
+    int trucks;
+    int availableTrucks;
+}station;
+
+station s;
+
+// Station Functions
+void addAvlTrucks(int i) {
+   s.availableTrucks += (i);
+}
+
+void inizialize(){
+    s.trucks = T;
+    s.availableTrucks = T;
+}</declaration>
+		<location id="id1" x="-722" y="-425">
+			<name x="-867" y="-416">waiting_for_trains</name>
+		</location>
+		<location id="id2" x="-348" y="-425">
+			<name x="-331" y="-433">fully_occupied</name>
+		</location>
+		<location id="id3" x="-1037" y="-425">
+			<name x="-1047" y="-459">idle</name>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="assignment" x="-935" y="-450">inizialize()</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-815" y="-553">enter!</label>
+			<label kind="assignment" x="-840" y="-536">addAvlTrucks(-1)</label>
+			<nail x="-722" y="-536"/>
+			<nail x="-858" y="-536"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-849" y="-281">s.availableTrucks&gt;1</label>
+			<label kind="synchronisation" x="-807" y="-315">free_truck?</label>
+			<label kind="assignment" x="-823" y="-298">addAvlTrucks(1)</label>
+			<nail x="-722" y="-298"/>
+			<nail x="-841" y="-298"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-568" y="-570">free_truck?</label>
+			<label kind="assignment" x="-586" y="-586">addAvlTrucks(1)</label>
+			<nail x="-535" y="-535"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-586" y="-374">s.availableTrucks==1</label>
+			<label kind="synchronisation" x="-553" y="-416">enter!</label>
+			<label kind="assignment" x="-578" y="-391">addAvlTrucks(-1)</label>
+		</transition>
+	</template>
+	<template>
+		<name>Train</name>
+		<parameter>int V, int C, int Cmax</parameter>
+		<declaration>// Train Cloks
+
+// Train Variables
+int current_distance; //it is a time: distance between current and next station divided by speed V
+
+// Train Functions
+</declaration>
+		<location id="id4" x="-951" y="-501">
+			<name x="-1062" y="-535">waiting_in_a_station</name>
+		</location>
+		<location id="id5" x="-722" y="-501">
+			<name x="-747" y="-535">traveling</name>
+		</location>
+		<location id="id6" x="-839" y="-383">
+			<name x="-926" y="-366">waiting_outside_a_station</name>
+		</location>
+		<location id="id7" x="-722" y="-383">
+			<name x="-705" y="-392">out_of_power</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id4"/>
+			<nail x="-986" y="-450"/>
+			<nail x="-986" y="-501"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-799" y="-399">C==0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-722" y="-450">C==0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-850" y="-603">enter?</label>
+			<nail x="-832" y="-586"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-943" y="-433">enter?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-875" y="-518">free_truck!</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+l = Line(1);
+s1 = Station(3);
+s2 = Station(1);
+s3 = Station(2);
+t1 = Train(100, 100,100);
+t2 = Train(100, 100,100);
+t3 =Train(100, 100,100);
+// List one or more processes to be composed into a system.
+system l, s1, s2, s3, t1, t2, t3;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

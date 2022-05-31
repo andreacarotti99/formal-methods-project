@@ -137,8 +137,8 @@ void decideWhoCanLeaveActualStation(){
 		<transition>
 			<source ref="id4"/>
 			<target ref="id2"/>
-			<label kind="guard" x="-935" y="-688">stationNumberOfAvailableTrucks[StationNumber] &gt; 0</label>
-			<label kind="synchronisation" x="-654" y="-714">initialization?</label>
+			<label kind="guard" x="-909" y="-688">stationNumberOfAvailableTrucks[StationNumber] &gt; 0</label>
+			<label kind="synchronisation" x="-688" y="-714">initialization?</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
